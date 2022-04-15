@@ -1,0 +1,10 @@
+{
+    .content_type = "text/html",
+    .body = "<p>My name is Andrei N. Ciobanu and this is a blog about my favourite musicians.<p>"
+            "<p>To contact me, please write an email to gnomemory (and then append yahoo.com)<p>"
+            "<p>List of favourite rock stars:<p>"
+            "<ol>"
+            "<li><a href='1'>David Bowie</a></li>"
+            "<li><a href='2'>Ozzy Osbourne</a></li>"
+            "</ol>"
+}
