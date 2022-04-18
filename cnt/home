@@ -6,5 +6,7 @@
             "<ol>"
             "<li><a href='1'>David Bowie</a></li>"
             "<li><a href='2'>Ozzy Osbourne</a></li>"
+            "<li><a href='3'>Jimmy Hendrix</a></li>" /* <<--- HERE*/
+            "<li><a href='4'>Andrei`</a></li>" /* <<--- HERE*/
             "</ol>"
 }
