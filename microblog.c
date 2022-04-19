@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 extern int errno;
@@ -59,7 +60,7 @@ typedef enum http_s_codes_e {
 
 #define REP_FMT "%s%s\n"
 #define REP_H_FMT "HTTP/%s %d \nContent-Type: %s\nContent-Length: %zu\n\n"
-#define REP_H_FMT_LEN (strlen(REP_H_FMT) + 1 + (1 << 6))
+#define REP_H_FMT_LEN (sizeof(REP_H_FMT) + (1 << 6))
 #define REP_MAX_CNT_SIZE (1 << 19)
 #define REP_MAX_SIZE (REP_H_FMT_LEN + REP_MAX_CNT_SIZE)
 
@@ -185,7 +186,7 @@ static inline bool http_req_is_final(const char *req_buff,
 // ------------------------------------
 // Sever
 // ------------------------------------
-#define DEFAULT_BACKLOG 10
+#define DEFAULT_BACKLOG INT_MAX
 #define DEFAULT_PORT 8080
 #define DEFAULT_MAX_FORKS 5
 #define DEFAULT_TIMEOUT 10000
@@ -294,6 +295,9 @@ void start_server() {
                                   .sin_addr.s_addr = INADDR_ANY,
                                   .sin_port = htons(DEFAULT_PORT)};
     memset(addr_in.sin_zero, '\0', sizeof(addr_in.sin_zero));
+
+    int v = 1;
+    setsockopt(server_sock_fd, SOL_SOCKET, SO_REUSEADDR, &v, sizeof(v));
 
     // Bind the socket to the address and port
     if (bind(server_sock_fd, (struct sockaddr *)&addr_in,
