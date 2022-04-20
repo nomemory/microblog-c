@@ -314,7 +314,7 @@ void start_server() {
     int client_sock_fd;
     int addr_in_len = sizeof(addr_in);
     for (;;) {
-        // A cliet has made a request
+        // A client has made a request
         client_sock_fd = accept(server_sock_fd, (struct sockaddr *)&addr_in,
                                 (socklen_t *)&addr_in_len);
         if (client_sock_fd == -1) {
