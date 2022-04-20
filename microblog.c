@@ -272,7 +272,7 @@ void server_proc_req(int client_sock_fd) {
     }
 
     if (rep_status < 0) {
-        // TODO LOG
+        // TODO: LOG
 
         // There was an error constructing the response
         // Return 500
