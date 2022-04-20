@@ -29,7 +29,7 @@ char *error_msgs[] = {
     "Socket create failed.",  // 1
     "Socket bind failed.",    // 2
     "Socket listen failed.",  // 3
-    "Socket accept failed",   // 4
+    "Socket accept failed.",   // 4
 };
 static inline void exit_with_error(enum error_codes err_code) {
     perror(error_msgs[-err_code]);
@@ -182,7 +182,7 @@ static inline bool http_req_is_final(const char *req_buff,
 //------------------------------------
 // Thread Pool
 // ------------------------------------
-// TODO change from forks to pthreads
+// TODO: change from forks to pthreads
 // ------------------------------------
 // Sever
 // ------------------------------------
@@ -204,14 +204,14 @@ static int server_receive(int client_sock_fd, char *req_buff) {
     int tot_b_req = 0;
     while ((b_req = recv(client_sock_fd, &req_buff[tot_b_req],
                          REQ_SIZE - tot_b_req, 0)) > 0) {
-        /* Connection was closed by the peer */
+        // Connection was closed by the peer
         if (b_req == 0) return SR_CON_CLOSE;
-        /* Reading Error */
+        // Reading Error
         if (b_req == -1) return SR_READ_ERR;
         tot_b_req += b_req;
-        /* HTTP Requst is sent */
+        // HTTP Request is sent
         if (http_req_is_final(req_buff, tot_b_req)) break;
-        /* req_buff overflows */
+        // req_buff overflows
         if (tot_b_req >= REQ_SIZE) return SR_READ_OVERFLOW;
     }
     return tot_b_req;
@@ -236,13 +236,13 @@ void server_proc_req(int client_sock_fd) {
     int rec_status = server_receive(client_sock_fd, req_buff);
     int rep_status;
     if (rec_status == SR_CON_CLOSE) {
-        // Connecon closed by peer
-        // There 's no reason to send anything further
+        // Connection closed by peer
+        // There's no reason to send anything further
         exit(EXIT_SUCCESS);
     } else if (rec_status == SR_READ_ERR || rec_status == SR_READ_OVERFLOW) {
         // Cannot Read Request(SR_READ_ERR) OR
         // Request is bigger than(REQ_SIZE)
-        // In this case we return 400(BAD REQUEST)
+        // In this case we, return 400(BAD REQUEST)
         rep_status = set_http_rep_400(rep_buff);
     } else if (http_req_is_get(req_buff)) {
         // Request is a valid GET
@@ -256,7 +256,7 @@ void server_proc_req(int client_sock_fd) {
             set_http_req_res(req_buff, 5, http_req_res_buff);
             if (set_post_idx(&p_idx, http_req_res_buff) < 0) {
                 // If the resource is not a number, or is a number
-                // out of range we return 404 NOT FOUND
+                // out of range, we return 404 NOT FOUND
                 rep_status = set_http_rep_404(rep_buff);
             } else {
                 // We return the corresponding post based on the index
@@ -266,14 +266,17 @@ void server_proc_req(int client_sock_fd) {
             }
         }
     } else {
-        // The request looks valid but it 's not a get
+        // The request looks valid, but it's not a GET
         // We return 501
         rep_status = set_http_rep_501(rep_buff);
     }
 
     if (rep_status < 0) {
+        // TODO: LOG
+
         // There was an error constructing the response
-        // TODO LOG
+        // Return 500
+        rep_status = set_http_rep_500(rep_buff);
     } else {
         server_send(client_sock_fd, rep_buff);
     }
@@ -311,16 +314,16 @@ void start_server() {
     int client_sock_fd;
     int addr_in_len = sizeof(addr_in);
     for (;;) {
-        // A cliet has made a request
+        // A client has made a request
         client_sock_fd = accept(server_sock_fd, (struct sockaddr *)&addr_in,
                                 (socklen_t *)&addr_in_len);
         if (client_sock_fd == -1) {
-            // TODO:	LOG ERROR BUT DON 'T EXIT
+            // TODO:	LOG ERROR BUT DON'T EXIT
             exit_with_error(ERR_SOC_ACCEPT);
         }
         pid_t proc = fork();
         if (proc < 0) {
-            // log error
+            // TODO: log error
             // Close client
             close(client_sock_fd);
         } else if (proc == 0) {
