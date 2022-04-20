@@ -266,7 +266,7 @@ void server_proc_req(int client_sock_fd) {
             }
         }
     } else {
-        // The request looks valid but it's not a GET
+        // The request looks valid, but it's not a GET
         // We return 501
         rep_status = set_http_rep_501(rep_buff);
     }
